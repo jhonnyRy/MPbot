@@ -10,7 +10,7 @@ STORE_MAP = {
     "Steam" : 1,
     "Epic" : 25,
     "GOG" : 6,
-    "Todas" : [1, 6, 25],
+    "Todas" : "1, 6, 25",
 }
 
 CHEAPSHARK_API_URL = "https://www.cheapshark.com/api/1.0/deals"
@@ -19,7 +19,7 @@ intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
-def get_deals(store_name: str, limit: int = 10):
+def get_deals(store_name: str, limit: int = 5):
     params = {
         'sortBy': 'Recent',
         'pageSize': limit,
@@ -64,42 +64,48 @@ async def deals_command(interaction: discord.Interaction, tienda: app_commands.C
         color = discord.Color.blue()
     )
 
-    for deal in deals:
-        sale_price =float(deal['salePrice'])
-        normal_price = float (deal['normalPrice'])
-        savings_percent = float(deal['savings'])
+    for i, deal in enumerate(deals):
+        thumb_url = deal.get('thunb')
 
-        current_store = (
-            "Steam" if deal['storeID'] == "1" else
-            "GOG" if deal['storeID'] == "6" else
-            "Epic" if deal['storeID'] == "25" else
-            "Otra Tienda"
-        )
+        for deal in deals:
+            sale_price =float(deal['salePrice'])
+            normal_price = float (deal['normalPrice'])
+            savings_percent = float(deal['savings'])
 
-        timestamp = int(deal['"LastChange'])
-        date_star = datetime.datetime.fromtimestamp(timestamp)
-        date_start_str = date_start_strftime("%d/%m/%Y")
+            current_store = (
+                "Steam" if deal['storeID'] == "1" else
+                "GOG" if deal['storeID'] == "6" else
+                "Epic" if deal['storeID'] == "25" else
+                "Otra Tienda"
+            )
 
-        price_status = ""
-        if sale_price == 0.0:
-            price_status = "**¡Gratis!**"
-        else:
-            price_status = (f"~~${normal_price:.2f}~~ ➔ **${sale_price:.2f}**"
-            f"(-{savings_percent:.0f}%)"
-        )
+            timestamp = int(deal['"LastChange'])
+            date_star = datetime.datetime.fromtimestamp(timestamp)
+            date_start_str = date_start_strftime("%d/%m/%Y")
 
-        deal_id = deal['dealID']
-        deal_url = f"https://www.cheapshark.com/redirect?dealID={deal_id}"
+            price_status = ""
+            if sale_price == 0.0:
+                price_status = "**¡Gratis!**"
+            else:
+                price_status = (f"~~${normal_price:.2f}~~ ➔ **${sale_price:.2f}**"
+                f"(-{savings_percent:.0f}%)"
+            )
 
-        field_value = (
-            f"{price_status}\n",
-            f"Tienda: **{current_store}**\n",
-            f"Iniciado: **{date_start_str}**\n",
-            f"[Ver Oferta]({deal_url})"
-        )
+            deal_id = deal['dealID']
+            deal_url = f"https://www.cheapshark.com/redirect?dealID={deal_id}"
+
+            field_value = (
+                f"{price_status}\n",
+                f"Tienda: **{current_store}**\n",
+                f"Iniciado: **{date_start_str}**\n",
+                f"[Ver Oferta]({deal_url})"
+            )
 
         embed.add.field(name=deal['title'], value="".join(field_value), inline=False)
 
+        if i == 0 and thumb_url:
+            embed.set_image(url=thumb_url)
+        
         embed.set.footer(text="Datos proporcionados por CheapShark.com | Solicitado por {interaction.user.name}", icon_url=Interaction.user.avatar.url)
 
     await Interaction.followup.send(embed=embed)
