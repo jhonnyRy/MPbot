@@ -1,0 +1,5 @@
+IPython
+discord
+requests
+datetime
+python-dotenv
