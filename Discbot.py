@@ -10,7 +10,7 @@ STORE_MAP = {
     "Steam" : 1,
     "Epic" : 25,
     "GOG" : 6,
-    "Todas" : None,
+    "Todas" : [1, 6, 25],
 }
 
 CHEAPSHARK_API_URL = "https://www.cheapshark.com/api/1.0/deals"
@@ -57,7 +57,7 @@ async def deals_command(interaction: discord.Interaction, tienda: app_commands.C
             f"**Error:** No se pudo conectar a la API de ofertas o no se encontraron datos para **{store_name.upper()}**.", ephemeral= True
         )
     
-    store_tittle = store_name.upper() if store_name !="Todas" else "TODAS LAS TIENDAS"
+    store_title = store_name.upper() if store_name !="Todas" else "TODAS LAS TIENDAS"
     embed = discord.Embed(
         tittle = f"Mejores ofertas recientes - {store_tittle}",
         description = f"Se encontraron **{len(deals)}** ofertas recientes.",
