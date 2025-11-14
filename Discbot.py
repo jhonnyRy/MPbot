@@ -59,7 +59,7 @@ async def deals_command(interaction: discord.Interaction, tienda: app_commands.C
     
     store_title = store_name.upper() if store_name !="Todas" else "TODAS LAS TIENDAS"
     embed = discord.Embed(
-        tittle = f"Mejores ofertas recientes - {store_tittle}",
+        tittle = f"Mejores ofertas recientes - {store_title}",
         description = f"Se encontraron **{len(deals)}** ofertas recientes.",
         color = discord.Color.blue()
     )
